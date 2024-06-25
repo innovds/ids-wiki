@@ -1,20 +1,17 @@
-[[_TOC_]]
-
 # Naming rules
 
 ## Package names
 
-Package names are always written with lowercase letters. Each package level is separated by a dot. A `_` can be used for cases where several words make up a level. Packages created as part of DSI Alten projects must begin with "com.alten" followed by the name of the project..
+Package names are always written with lowercase letters. Each package level is separated by a dot. A `_` can be used for cases where several words make up a level.
 Examples:
-- `com.alten.museng.career`
-- `com.alten.mybu.mission`
-- `com.alten.museng.composed_name`
+- `com.ids.contact.dto`
+- `com.ids.remind_hub.entity`
 
 ## Class names
 
 The first character of a class name must be a capital letter. Then it is written in lowercase with capitals to mark the beginning of a new word. Examples : 
-- `public class HumanResource`
-- `public Class Career`
+- `public class ContactType`
+- `public Class Contact`
 
 ## Method names
 
@@ -29,7 +26,7 @@ When the method returns a `boolean`, the method name should be a short phrase th
 Here, we can see some examples of correct names:
 - `public boolean hasSize(int value)`
 - `public boolean contains(Object object)`
-- `public static boolean isConsultant(HRDto humanResource)`
+- `public static boolean isOrganization(Contact contact)`
 
 
 This rule is also valid for accessors:
@@ -68,7 +65,7 @@ Enums are constants and follow the same naming rules:
          DRAFT, IN_PROGRESS, ACTIVE, ARCHIVED;
      }
 ```
-#Class organization
+# Class organization
 
 After the declaration of the class we found (in this order) :
 1. constants
@@ -147,7 +144,7 @@ So, this code must be replaced by
 
 Now, `if` and `for` blocks can be clearly identified and it is possible to read the last statement
 
-##Blank line
+## Blank line
 For readability reason, it is necessary to add one blank line in some cases :
 
 - after the class declaration
@@ -242,16 +239,16 @@ Example:
     public static final String SUB_TYPE_BUSINESS_MANAGER = "sub_type.business_manager";
     public static final String SUB_TYPE_FUNCTIONAL = "sub_type.functional";
 
-    public static final String POLE_ALTEN_FRANCE_CODE = "pole.altenfrance";
+    public static final String POLE_IDS_FRANCE_CODE = "pole.idsfrance";
     public static final String POLE_ODC_MAROC = "pole.odc-maroc";
-    public static final String POLE_ALTEN_TECHNO = "pole.altenTechnology";
+    public static final String POLE_IDS_TECHNO = "pole.idsTechnology";
     public static final String POLE_SANTE = "pole.sante";
     public static final String POLE_SOLUTION = "pole.solutions";
     public static final String POLE_SIRT = "pole.sirt";
     [...]
 ```
 
-##Blank character
+## Blank character
 
 For lisibility reason, it is necessary to add one blank character in many cases :
 
