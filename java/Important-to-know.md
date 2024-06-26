@@ -1,131 +1,163 @@
-# String aggregation
-In Java, strings are **unalterable**. This means that any concatenation operation done with the `+` or `+=` operator results in the creation of a new `String` instance. No worries when it comes to doing the operation a small number of times but when the number of concatenations increases, the performance degradation is enormous.
+# String Aggregation
 
-## The classe `StringBuilder`
-Take the example of the following table :
+In Java, strings are **unalterable**. This means that any concatenation operation done with the `+` or `+=` operator results in the creation of a new `String` instance. This is fine for a small number of operations, but performance degrades significantly with many concatenations.
 
-        String[] stringArray = new String[number];
+## The `StringBuilder` Class
 
-        for (int i = 0; i < number; i++) {
-            stringArray[i] = "The value of the number is " + i + ".\n";
-        }
+Take the example of the following table:
+
+```java
+String[] stringArray = new String[number];
+
+for (int i = 0; i < number; i++) {
+    stringArray[i] = "The value of the number is " + i + ".\n";
+}
+```
+
 We want to concatenate all the values in the array. The following code works but should be **avoided**:
 
-        for (int i = 0; i < number; i++) {
-            result += stringArray[i]; // Not correct
-        }
-In order to concatenate character strings, you must use the `StringBuilder` class (or `StringBuffer` if there is a risk of concurrent access, which is quite rare). So our code becomes:
+```java
+for (int i = 0; i < number; i++) {
+    result += stringArray[i]; // Not correct
+}
+```
 
-        for (int i = 0; i < number; i++) {
-            builder.append(stringArray[i]); // Correct
-        }
+To concatenate strings, use the `StringBuilder` class (or `StringBuffer` if there's a risk of concurrent access, which is rare). So our code becomes:
 
-Once the concatenations are complete, a call to the `toString()` method allows you to retrieve the result from the `StringBuilder`
+```java
+for (int i = 0; i < number; i++) {
+    builder.append(stringArray[i]); // Correct
+}
+```
 
-## Small performance test
+Once the concatenations are complete, a call to the `toString()` method retrieves the result from the `StringBuilder`.
 
-I did some tests to measure the performance gap that we get from the previous code. The values are not very precise and they obviously vary according to the machine and its load at the time of the test, but they give an idea of the difference that exists between the two ways of doing things:
+## Small Performance Test
 
-| Number of loop occurrences | Time for `+` in **µs** | Time for `append` in **µs** | Comment|
+I did some tests to measure the performance gap between the two methods. The values vary by machine and load, but they give an idea of the difference:
+
+| Number of loop occurrences | Time for `+` in **µs** | Time for `append` in **µs** | Comment |
 |--|--|--|--|
-| 150 | 997 | 0 | With a time less than a microsecond, the times of the `+` method are random but remain between 0 and 1ms whereas for `append` we always remain at 0|
-| 1000 | 23,935 | 0 | The `+` time has clearly increased while for the `append` it remains immeasurable |
-| 5000| 455,782 | 998.6 | The `append` time appears randomly, as was the case for the `+` with 150 occurrences. We can estimate the performance ratio between the two methods at least 450 at this time of processing |
-| 10,000| 1,055,307| 997 | The `+` time continues to climb and reaches the second while the `append` remains around the millisecond |
-| 20,000 | 3,033,925| 995 | 3 seconds for the `+` against less than a millisecond for the `append` |
-| 30,000 | 6,092,791 | 2,993 | We are now at 6 seconds for the `+` while the `append` is at about 3 ms, a ratio of 2,000 |
+| 150 | 997 | 0 | With a time less than a microsecond, the `+` method times are random but remain between 0 and 1 ms, while `append` always stays at 0 |
+| 1000 | 23,935 | 0 | The `+` time clearly increases, while `append` remains immeasurable |
+| 5000 | 455,782 | 998.6 | The `append` time appears randomly, similar to `+` with 150 occurrences. The performance ratio is about 450 |
+| 10,000 | 1,055,307 | 997 | The `+` time continues to climb, reaching a second, while `append` remains around a millisecond |
+| 20,000 | 3,033,925 | 995 | 3 seconds for `+` versus less than a millisecond for `append` |
+| 30,000 | 6,092,791 | 2,993 | 6 seconds for `+` while `append` is about 3 ms, a ratio of 2,000 |
 
+## For Further
 
-## For further
-
-- A `StringBuilder` is by default initialized with a size of 16 characters. When the concatenation requires a larger size, the object is automatically reallocated with a larger size. This is why it is useful to specify a size to the constructor in order to limit these reassignments. And it is better to plan a little too big (without exaggerating) than a little too small.
-- The `StringBuilder` allows other operations on a string like
-   - delete part of a string: `delete(int start, int end)`
-   - delete a character: `deleteCharAt(int index)`
-   - insert a String or a primitive type at a given position: `insert(int offset, String str)`, `insert(int offset, long l)`...
-   - replace: `replace​(int start, int end, String str)`
+- A `StringBuilder` is initialized with a size of 16 characters. When more space is needed, it is reallocated. It's useful to specify a size to limit reallocations.
+- The `StringBuilder` allows other operations on a string like:
+    - Delete part of a string: `delete(int start, int end)`
+    - Delete a character: `deleteCharAt(int index)`
+    - Insert a string or a primitive type at a given position: `insert(int offset, String str)`, `insert(int offset, long l)`...
+    - Replace: `replace​(int start, int end, String str)`
 - Do not concatenate strings using `+` inside an `append`.
 
+## Other Aggregations
 
-## Other aggregations
-- When it comes to concatenating the elements of an array with a separator, there are other ways to proceed, in particular `String result = String.join(separator, stringArray);`. But this way remains noticeably less efficient than the `StringBuilder` (about 5 times slower).
-- The `String.format` method can be used to format messages with arguments:
-   - the result of `String.format("The code of this object is '%s'", code)` is "The code of this object is 'object.code'"
-   - the result of `String.format("The price of this object is %d €", 12500)` is "The price of this object is 12500 €"
-- `+` This operateur can perfectly be usued in some cases, for example where there is a finite number of aggregations to do. `String result = myString + otherString + anotherString + lastString` is correct and quick as the compiler transforms this code to 
-``` java 
-String result = new StringBuilder(myString).append(otherString).append(anotherString).append(lastString).toString()
-``` 
-- `concat` method of `String` object. It's possible to use this method to concatenate 2 (and only 2) `String` : `String result = myString.concat(otherString);`. But **it must never be used to concat more than 2** `String` because it will instanciate a new `String` for each `concat`
+- For concatenating array elements with a separator: `String result = String.join(separator, stringArray);`. This is less efficient than `StringBuilder` (about 5 times slower).
+- The `String.format` method formats messages with arguments:
+    - `String.format("The code of this object is '%s'", code)` results in "The code of this object is 'object.code'"
+    - `String.format("The price of this object is %d €", 12500)` results in "The price of this object is 12500 €"
+- The `+` operator can be used when there are a finite number of aggregations: `String result = myString + otherString + anotherString + lastString`. The compiler transforms this to:
 
-# string.contains() / string.startWith() / string.endWith()
+```java
+String result = new StringBuilder(myString).append(otherString).append(anotherString).append(lastString).toString();
+```
 
+- The `concat` method of `String` can concatenate 2 `String` objects: `String result = myString.concat(otherString);`. It should not be used for more than 2 `String` objects as it creates a new `String` for each `concat`.
 
-#Autoboxing/unboxing
+# `string.contains()`, `string.startWith()`, `string.endWith()`
 
-Autoboxing consists of transforming a primitive type into an equivalent wrapper object and inboxing does the opposite. Autoboxing transforms for example an `int` into `Integer`, a `char` into `Character`, a `boolean` into `Boolean` or a `long` into `Long`. For more explanation, see [here](https://docs.oracle.com/javase/tutorial/java/data/autoboxing.html).
-It is nevertheless worth remaining careful because there is a fundamental difference between primitive types and objects: objects can be null while a primitive type must have a value. So the following code will not cause any compilation problems but will always throw a NullPointerException.
+# Autoboxing/Unboxing
 
-    Long longObj = null;
-    long longPrimitif = longObj;
-No such risk with unboxing, but keep in mind that this operation results in the instantiation of an object which, in turn, can have an impact on performance. For example, the following code works but is not relevant because it requires initializing a useless Integer.
+Autoboxing transforms a primitive type into an equivalent wrapper object, and unboxing does the opposite. For more explanation, see [here](https://docs.oracle.com/javase/tutorial/java/data/autoboxing.html).
 
-    Integer varA = 7899;
-    int varB = 225;
-    int result = varB + varA;
+Be cautious because objects can be null while primitive types must have a value. The following code will throw a `NullPointerException`:
 
-Similarly, be careful when declaring the parameters of a method:
+```java
+Long longObj = null;
+long longPrimitif = longObj;
+```
 
-    public long sum(Long a, Long b) {
-        return a + b;
-    }
-In the above method, there is a risk of `NullPointerException` since `a` and `b` are `Long` and can therefore be null, whereas there is no risk in the following method:
+There is no risk with unboxing, but it can impact performance due to object instantiation:
 
-    public long sum(long a, long b) {
-        return a + b;
-    }
+```java
+Integer varA = 7899;
+int varB = 225;
+int result = varB + varA;
+```
 
-In the following example the method returns a `Boolean` but the value can never be null.
+Be careful when declaring method parameters:
 
-    public Boolean areEquals(int valueA, int valueB) {
-        return valueA == valueB;
-    }
+```java
+public long sum(Long a, Long b) {
+    return a + b;
+}
+```
 
-This code works but it weighs down the use of the result as the null value must be checked. So, the returned type must be change to `boolean`
+This method can throw a `NullPointerException` since `a` and `b` can be null. The following method does not have this risk:
 
-# Lists.newArrayList is not equal to List.of
+```java
+public long sum(long a, long b) {
+    return a + b;
+}
+```
+
+The following method returns a `Boolean`, but the value can never be null:
+
+```java
+public Boolean areEquals(int valueA, int valueB) {
+    return valueA == valueB;
+}
+```
+
+Change the return type to `boolean` to avoid null checks.
+
+# `Lists.newArrayList` is not equal to `List.of`
 
 ## Explanation
 
-### `Lists.newArrayList` 
+### `Lists.newArrayList`
 
-The class `Lists` is available with package `com.google.common.collect` (never use the `Lists` class from AssertJ outside of test classes 😡). The static method `newArrayList` intanciates a new `ArrayList` with the specified values. This method is a short cut to create a new `ArrayList` and directly add one or more entries. 
-For example, 
+The class `Lists` is available in the package `com.google.common.collect`. The static method `newArrayList` instantiates a new `ArrayList` with specified values:
 
-     List<String> myList = Lists.newArrayList("a", "b", "c");
-can be used to replace
+```java
+List<String> myList = Lists.newArrayList("a", "b", "c");
+```
 
-      List<String> myList = new ArrayList<>();
-      myList.add("a");
-      myList.add("b");
-      myList.add("c");
+This can replace:
+
+```java
+List<String> myList = new ArrayList<>();
+myList.add("a");
+myList.add("b");
+myList.add("c");
+```
 
 ### `List.of`
-Here, `List` is the well known interface available with package `java.util`. It is implemented by `ArrayList`, `Vector` classes and some other ones. The static method `List.of` intanciates a `List`, but not an `ArrayList`. The returned instance type depends on the number of given parameters. But all of them have a common point : they extend `AbstractImmutableList`. As the returned list is immutable, it won't be possible to add, replace or remove any element.
 
-**<u>Noticed:<u>**
+The `List` interface is available in the package `java.util`. The static method `List.of` instantiates a `List`, but not an `ArrayList`. The returned instance type depends on the number of parameters and extends `AbstractImmutableList`. The list is immutable.
+
+**Note:**
 `List.copyOf()` also returns an immutable list, like `Collections.emptyList()`.
 
-## Basic use case
+## Basic Use Case
 
-Sometime it's useful to define a `List` as constant, to check if a parameter is one of the expected values for example. In this case, the list could be defined like this :
+Sometimes it's useful to define a `List` as constant, for example, to check if a parameter is one of the expected values:
 
-    private static final List<String> EXPECTED_VALUES = Lists.newArrayList("An expected value", "Another expected value");
+```java
+private static final List<String> EXPECTED_VALUES = Lists.newArrayList("An expected value", "Another expected value");
+```
 
-But, with this code there is something wrong : as `EXPECTED_VALUES` is an `ArrayList`, it is possible to add, replace or remove values. However, here we need an immutable list to be sure no changes will be made. There is an easy way to get what we need :
+This is incorrect as `EXPECTED_VALUES` is an `ArrayList` and can be modified. Use `List.of` to create an immutable list:
 
-    private static final List<String> EXPECTED_VALUES = List.of("An expected value", "Another expected value");
+```java
+private static final List<String> EXPECTED_VALUES = List.of("An expected value", "Another expected value");
+```
 
-# Java assert
+# Java Assert
 
-Even if the Java `assert` instruction propose a simple way to validate an hypothesis, it must never be used as it is not activated on our server. So the `assert` instruction will have no effect.
+Even though the Java `assert` statement offers a simple way to validate assumptions, it should not be used as it is not activated on our server, rendering it ineffective.
