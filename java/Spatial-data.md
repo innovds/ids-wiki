@@ -1,4 +1,4 @@
-# Working with Spatial Data using Spring Web, Spring Data JPA, and Postgres
+### Working with Spatial Data using Spring Web, Spring Data JPA, and Postgres
 
 This guide provides a step-by-step approach to handling spatial data using the Spring Web framework, Spring Data JPA, and PostgreSQL with the **PostGIS** extension. The examples included demonstrate how to create, list, and manage spatial data, specifically focusing on the integration with Spring Boot and Hibernate Spatial.
 
@@ -79,6 +79,45 @@ public class ContactAddress {
     private Contact contact;
 }
 ```
+
+## Inserting Data with Liquibase
+
+To manage database migrations and insert data using Liquibase, you can add the following changeset to your Liquibase migration file :
+
+```xml
+<changeSet id="1" author="yourname">
+    <insert tableName="contact_address">
+        <column name="default_usage" value="Headquarters"/>
+        <column name="address_line1" value="123 Main St"/>
+        <column name="address_line2" value="Suite 500"/>
+        <column name="city" value="New York"/>
+        <column name="state" value="NY"/>
+        <column name="country" value="USA"/>
+        <column name="postal_code" value="10001"/>
+        <column name="location" valueComputed="ST_MakePoint(40.7128, -74.0060)"/>
+        <column name="status" value="ACTIVE"/>
+        <column name="contact_id" value="c001-ids"/>
+    </insert>
+</changeSet>
+```
+
+Or
+
+```xml
+<changeSet id="1" author="yourname">
+    <sql>
+        INSERT INTO contact_address (default_usage, address_line1, address_line2, city, state, country, postal_code,
+        location, status, contact_id)
+        VALUES
+        ('Headquarters', '123 Main St', 'Suite 500', 'New York', 'NY', 'USA', '10001', ST_MakePoint(40.7128, -74.0060),
+        'ACTIVE', 'c001-ids');
+    </sql>
+</changeSet>
+```
+
+In this changeset:
+- `valueComputed="ST_MakePoint(40.7128, -74.0060)"` is used to create a point using the PostGIS `ST_MakePoint` function.
+
 
 ## Custom JSON Serialization/Deserialization
 
@@ -170,7 +209,6 @@ package com.ids.contact_ms.controller;
 import com.ids.contact_ms.entity.ContactAddress;
 import com.ids.contact_ms.repository.ContactAddressRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
