@@ -33,7 +33,7 @@
 - The identifier is in the path (`@PathVariable Long id`).
 - The update fields are in the request body (`@RequestBody Car car` or specific fields).
 
-### Delete an Object
+### Delete an Object (Physical Deletion)
 
 `DELETE /api/v1/cars/{id}`
 - The identifier is in the path (`@PathVariable Long id`).
@@ -53,6 +53,27 @@
 `GET /api/v1/cars/{id}`
 - The identifier is in the path (`@PathVariable Long id`).
 - Returns the object or `404 Not Found` if not found.
+
+## Additional Actions for Archiving and Restoring
+
+### Archive an Object
+
+`PATCH /api/v1/cars/{id}/archive`
+- The identifier is in the path (`@PathVariable Long id`).
+- This action sets the `archived` field to `true`.
+- Returns `200 OK` if successful.
+
+### Restore an Archived Object
+
+`PATCH /api/v1/cars/{id}/restore`
+- The identifier is in the path (`@PathVariable Long id`).
+- This action sets the `archived` field to `false`.
+- Returns `200 OK` if successful.
+
+### Get All Active Objects (Not Archived)
+
+`GET /api/v1/cars?archived=false`
+- Returns a list of active cars with `200 OK`.
 
 ## Complex Cases
 
@@ -87,6 +108,8 @@
 
 - Implement authentication and authorization (e.g., OAuth2, JWT).
 - Ensure endpoints are secured appropriately.
+- Consider rate limiting to protect against abuse.
+- Use HTTPS for all API communications to ensure data security.
 
 ## Quick Summary
 
@@ -97,6 +120,9 @@
 - **Update**:
     - `PUT /api/v1/cars/{id}` for complete update.
     - `PATCH /api/v1/cars/{id}` for partial update.
-- **Delete**: `DELETE /api/v1/cars/{id}`.
+- **Delete (Physical)**: `DELETE /api/v1/cars/{id}`.
+- **Archive**: `PATCH /api/v1/cars/{id}/archive`.
+- **Restore**: `PATCH /api/v1/cars/{id}/restore`.
+- **Get Active Objects**: `GET /api/v1/cars?archived=false`.
 
-_Keep these simple and readable rules in mind for CRUD operations._
+_Keep these simple and readable rules in mind for CRUD operations and additional functionalities._
