@@ -1,0 +1,16 @@
+services:
+  contact-ms:
+    image: innovds/contact-ms:1.0
+    ports:
+      - 6001:6001
+    # env_file:
+    #   - .env
+    environment:
+      - spring.profiles.active=docker
+      - CONFIG_SERVER_URL=http://config-server:8888
+    networks:
+      - local_network
+
+networks:
+  local_network:
+    external: true

@@ -1,0 +1,16 @@
+services:
+  config-server:
+    image: innovds/config-server:1.0
+    restart: unless-stopped
+    ports:
+      - 8888:8888
+    env_file:
+      - .env
+    environment:
+      - spring.profiles.active=docker
+    networks:
+      - local_network
+
+networks:
+  local_network:
+    external: true

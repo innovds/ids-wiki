@@ -1,0 +1,12 @@
+services:
+  discovery-service:
+    image: innovds/discovery-service:1.0
+    restart: unless-stopped
+    ports:
+      - 8761:8761
+    networks:
+      - local_network
+
+networks:
+  local_network:
+    external: true
