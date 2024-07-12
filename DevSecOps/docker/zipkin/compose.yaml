@@ -1,0 +1,14 @@
+version: '3.8'
+
+services:
+  zipkin:
+    image: openzipkin/zipkin
+    restart: unless-stopped
+    ports:
+      - "9411:9411"
+    networks:
+      - local_network
+
+networks:
+  local_network:
+    external: true
