@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   keycloak:
     image: quay.io/keycloak/keycloak:25.0
@@ -14,10 +12,9 @@ services:
       KC_DB_PASSWORD: keycloak
     #      KC_HOSTNAME: keycloak
     #      KC_HTTP_RELATIVE_PATH: /kc
-
     ports:
       - "9080:8080"
-    command: start-dev
+    command: start-dev --hostname-strict=false
     networks:
       - local_network
 
