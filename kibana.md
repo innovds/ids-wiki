@@ -58,6 +58,34 @@ GET http-access-*/_search
 }
 ```
 
+calcul count : 
+GET http-access-*/_count
+```
+{
+  "query": {
+    "bool": {
+      "filter": [
+        {
+          "terms": {
+            "@service.keyword": [
+              "skill-ms",
+              "project-ms"
+            ]
+          }
+        }
+      ],
+      "must_not": [
+        {
+          "wildcard": {
+            "uri": "/actuator/*"
+          }
+        }
+      ]
+    }
+  }
+}
+```
+
 requête  Kibana count API
 ```
 GET /http-access-*/_search
