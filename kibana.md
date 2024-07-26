@@ -59,6 +59,7 @@ GET http-access-*/_search
 ```
 
 requête  Kibana count API
+```
 GET /http-access-*/_search
 {
   "size": 0,
@@ -160,3 +161,4 @@ GET /http-access-*/_search
     }}
   }
 }
+```
